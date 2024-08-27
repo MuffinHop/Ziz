@@ -110,7 +110,7 @@ Wiki: https://github.com/anael-seghezzi/CToy/wiki
 License
 -------
 
-CToy is licensed under the zlib/libpng License.
+Ziz is licensed under the zlib/libpng License.
 
 Building CToy from sources (CMake)
 ----------------------------------
