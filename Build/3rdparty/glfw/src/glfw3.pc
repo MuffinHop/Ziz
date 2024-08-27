@@ -1,0 +1,13 @@
+prefix=/Users/sofia.savilampi/Downloads/CToy-master/bin
+exec_prefix=${prefix}
+includedir=/Users/sofia.savilampi/Downloads/CToy-master/bin/include
+libdir=/Users/sofia.savilampi/Downloads/CToy-master/bin/lib
+
+Name: GLFW
+Description: A multi-platform library for OpenGL, window and input
+Version: 3.3.0
+URL: https://www.glfw.org/
+Requires.private: 
+Libs: -L${libdir} -lglfw3
+Libs.private:  -framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo
+Cflags: -I${includedir}

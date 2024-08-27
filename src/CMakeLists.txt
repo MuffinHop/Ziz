@@ -1,0 +1,142 @@
+## Find source and headers
+FILE(GLOB HEADERS
+  *.h
+  "${MTCL_INCLUDE_DIR}/*.h"
+  "${STB_INCLUDE_DIR}/*.h"
+)
+FILE(GLOB SOURCES
+  ctoy_tcc.c
+  ../3rdparty/glad/src/glad.c
+  ../3rdparty/gnurocket/source/device.c
+  ../3rdparty/gnurocket/source/tcp.c
+  ../3rdparty/gnurocket/source/track.c
+)
+
+IF(CMAKE_HAS_SORT)
+  LIST(SORT HEADERS)
+  LIST(SORT SOURCES)
+ENDIF(CMAKE_HAS_SORT)
+
+## Build
+INCLUDE_DIRECTORIES(
+  ## Maratis
+  ${MTCL_INCLUDE_DIR}
+
+  ## 3rdparty
+  ${GLFW_INCLUDE_DIR}
+  ${TINYCTHREAD_INCLUDE_DIR}
+  ${GLAD_INCLUDE_DIR}
+  ${ROCKET_INCLUDE_DIR}
+  ../3rdparty/libtcc/
+  ../3rdparty/openal-soft/include/
+)
+
+IF(WIN32)
+INCLUDE_DIRECTORIES(../3rdparty/dirent/include)
+ENDIF(WIN32)
+
+IF(WIN32)
+  LINK_DIRECTORIES(../3rdparty/libtcc/win)
+	LINK_DIRECTORIES(../3rdparty/openal-soft/lib/)
+	SET(OPENAL_LIBRARY OpenAL32)
+ENDIF(WIN32)
+IF(APPLE)
+  LINK_DIRECTORIES(../3rdparty/libtcc/osx)
+	FIND_LIBRARY(OPENAL_LIBRARY OpenAL)
+ENDIF(APPLE)
+IF(UNIX AND NOT APPLE)
+  LINK_DIRECTORIES(../3rdparty/libtcc/linux)
+  FIND_PACKAGE(OpenAL REQUIRED)
+ENDIF(UNIX AND NOT APPLE)
+
+ADD_EXECUTABLE(CToy ${SOURCES} ${HEADERS})
+ADD_EXECUTABLE(CToy_player ${SOURCES} ${HEADERS})
+set_target_properties(CToy_player PROPERTIES COMPILE_DEFINITIONS "CTOY_PLAYER")
+
+TARGET_LINK_LIBRARIES(CToy
+  ## Maratis
+  ${MTCL_LIBRARIES}
+
+  ## 3rdparty
+  ${GLFW_LIBRARIES}
+  ${TINYCTHREAD_LIBRARIES}
+  tcc
+
+  ## System libraries
+  ${OPENGL_LIBRARIES}
+  ${OPENAL_LIBRARY}
+  ${PLATFORM_LIBRARIES}
+  ${OS_SPECIFIC_LIBRARIES}
+)
+
+TARGET_LINK_LIBRARIES(CToy_player
+  ## Maratis
+  ${MTCL_LIBRARIES}
+
+  ## 3rdparty
+  ${GLFW_LIBRARIES}
+  ${TINYCTHREAD_LIBRARIES}
+  tcc
+
+  ## System libraries
+  ${OPENGL_LIBRARIES}
+  ${OPENAL_LIBRARY}
+  ${PLATFORM_LIBRARIES}
+  ${OS_SPECIFIC_LIBRARIES}
+)
+
+## Install
+INSTALL(TARGETS CToy DESTINATION ${MTCL_INSTALL_DIR})
+INSTALL(TARGETS CToy_player DESTINATION ${MTCL_INSTALL_DIR})
+
+IF(WIN32)
+  INSTALL(FILES ../3rdparty/libtcc/win/libtcc.dll DESTINATION ${MTCL_INSTALL_DIR})
+  INSTALL(FILES ../3rdparty/libtcc/win/libtcc1.a DESTINATION ${MTCL_INSTALL_DIR})
+  INSTALL(FILES ../3rdparty/openal-soft/lib/OpenAL32.dll DESTINATION ${MTCL_INSTALL_DIR})
+ENDIF(WIN32)
+IF(APPLE)
+  INSTALL(FILES ../3rdparty/libtcc/osx/libtcc.dylib DESTINATION ${MTCL_INSTALL_DIR})
+  INSTALL(FILES ../3rdparty/libtcc/osx/libtcc1.a DESTINATION ${MTCL_INSTALL_DIR})
+ENDIF(APPLE)
+IF(UNIX AND NOT APPLE)
+  INSTALL(FILES ../3rdparty/libtcc/linux/x86-64/libtcc1.a DESTINATION ${MTCL_INSTALL_DIR}/x86-64)
+  INSTALL(FILES ../3rdparty/libtcc/linux/libtcc.so DESTINATION ${MTCL_INSTALL_DIR})
+ENDIF(UNIX AND NOT APPLE)
+
+INSTALL(DIRECTORY ../ressources/data DESTINATION ${MTCL_INSTALL_DIR})
+INSTALL(DIRECTORY ../ressources/include DESTINATION ${MTCL_INSTALL_DIR})
+INSTALL(DIRECTORY ../ressources/src DESTINATION ${MTCL_INSTALL_DIR})
+INSTALL(DIRECTORY ../ressources/tool DESTINATION ${MTCL_INSTALL_DIR})
+FILE(GLOB SRC_CORE ../src/ctoy_srgb.h ../src/ctoy.* ../src/m_* ../src/stb_*)
+INSTALL(FILES ${SRC_CORE} DESTINATION "${MTCL_INSTALL_DIR}/tool/build_native/src")
+INSTALL(DIRECTORY ../3rdparty DESTINATION "${MTCL_INSTALL_DIR}/tool/build_native")
+
+IF(APPLE)
+  SET_TARGET_PROPERTIES(
+    CToy
+    PROPERTIES
+    BUILD_WITH_INSTALL_RPATH 1
+    INSTALL_RPATH "@loader_path/"
+  )
+  SET_TARGET_PROPERTIES(
+    CToy_player
+    PROPERTIES
+    BUILD_WITH_INSTALL_RPATH 1
+    INSTALL_RPATH "@loader_path/"
+  )
+ENDIF(APPLE)
+
+IF(UNIX AND NOT APPLE)
+  SET_TARGET_PROPERTIES(
+    CToy
+    PROPERTIES
+    BUILD_WITH_INSTALL_RPATH 1
+    INSTALL_RPATH "$ORIGIN/"
+  )
+  SET_TARGET_PROPERTIES(
+    CToy_player
+    PROPERTIES
+    BUILD_WITH_INSTALL_RPATH 1
+    INSTALL_RPATH "$ORIGIN/"
+  )
+ENDIF(UNIX AND NOT APPLE)
