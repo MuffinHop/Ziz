@@ -39,6 +39,23 @@
 #define CTOY_CHAR_MAX 256 // maximum characters per update
 #define CTOY_PEN_DATA_MAX 256 // maximum pen tablet data per update
 
+/* gnu rocket */
+#define MAX_VARIABLES 512  // Adjust based on expected usage
+#define MAX_NAME_LENGTH 64 // Adjust based on expected name length
+
+// Structure to hold Rocket variable data
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    float value;
+} RocketVariable;
+
+// Array to hold Rocket variables
+RocketVariable rocketVariables[MAX_VARIABLES];
+unsigned short add_to_rocket(const char *name);
+void get_from_rocket(unsigned short id, float *ret) ;
+
+
+
 /* system */
 unsigned long ctoy_t(void); // return ctoy current tick (number of updates since ctoy started)
 double ctoy_get_time(void); // return ctoy current time (seconds elapsed since ctoy started)

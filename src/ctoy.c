@@ -139,9 +139,9 @@ float                ctoy__scroll_y = 0;
 ALCdevice *    ctoy__oal_device = NULL;
 ALCcontext *   ctoy__oal_context = NULL;
 
-double bpm = 150.0;
-int rpb = 8; /* rows per beat*/
-double row_rate = 20;
+#define bpm 127.0
+#define rpb 4
+double row_rate = (bpm / 60.0) * rpb;
 double row;
 ALenum format;
 ALvoid* data;
@@ -175,25 +175,14 @@ struct sync_device * initialize_rocket_device() {
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_VARIABLES 512  // Adjust based on expected usage
-#define MAX_NAME_LENGTH 64 // Adjust based on expected name length
-
-// Structure to hold Rocket variable data
-typedef struct {
-    char name[MAX_NAME_LENGTH];
-    float value;
-} RocketVariable;
-
-// Array to hold Rocket variables
-RocketVariable rocketVariables[MAX_VARIABLES];
 int rocketVariableCount = 0;  // Number of variables currently stored
 
 // Function to add a new variable to the dictionary
-void add_to_rocket(const char *name) {
+unsigned short add_to_rocket(const char *name) {
     // Check if the variable already exists
     for (int i = 0; i < rocketVariableCount; i++) {
         if (strcmp(rocketVariables[i].name, name) == 0) {
-            return;
+            return i;
         }
     }
 
@@ -205,18 +194,14 @@ void add_to_rocket(const char *name) {
     } else {
         printf("Rocket variable storage full! Cannot add more variables.\n");
     }
+    return rocketVariableCount - 1;
 }
 
 // Function to retrieve the value of a variable from the dictionary
-float get_from_rocket(const char *name) {
-    for (int i = 0; i < rocketVariableCount; i++) {
-        if (strcmp(rocketVariables[i].name, name) == 0) {
-            return rocketVariables[i].value;
-        }
-    }
-
-    printf("Variable '%s' not found!\n", name);
-    return 0.0f; // Return a default value if not found
+void get_from_rocket(unsigned short id, float *ret) {
+    printf("get_from_rocket %i\n", id);
+    printf("%s ctoy.c %f\n", rocketVariables[id].name, rocketVariables[id].value);
+    *ret = rocketVariables[id].value;
 }
 
 void reset_rocket_device() {
@@ -356,8 +341,7 @@ static ALfloat get_position_in_seconds(ALuint source)
 {
     ALint bytes;
     alGetSourcei(source, AL_BYTE_OFFSET, &bytes);
-    alGetSourcef(source, AL_PITCH, &frequency);
-    ALfloat seconds = (ALfloat)bytes / frequency;
+    ALfloat seconds = (ALfloat)bytes / sample_rate;
     return seconds;
 }
 
@@ -665,16 +649,30 @@ static void ctoy__update(void)
    glfwGetFramebufferSize(ctoy__window, &ctoy__fb_width, &ctoy__fb_height);
 
    ctoy__t++;
-
-   double seconds = get_position_in_seconds(source) / sample_rate;
+   if(sample_rate == 0) {
+    return;
+   }
+   if(rocket_initialized==false) {
+    return;
+   }
+   row_rate = (bpm / 60.0) * rpb;
+   printf("get_position_in_seconds %f\n", get_position_in_seconds(source));
+   printf("sample_rate %f\n", sample_rate);
+   double seconds = (double)get_position_in_seconds(source) / 4 + 0.0003233f;
+   printf("Time %f\n", seconds);
    row = seconds * row_rate;
+   printf("Row %f\n", row);
 #ifndef SYNC_PLAYER
+   printf("Syncing up");
    if (sync_update(rocket, (int)floor(row), &al_cb, (void *)&source))
       sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT);
+   printf("Synced up");
 #endif
+   printf("rocketVariableCount %d\n", rocketVariableCount);
     for (int i = 0; i < rocketVariableCount; i++) {
-         const struct sync_track* track = sync_get_track(rocket, rocketVariables[i].name);
-         rocketVariables[i].value = sync_get_val(track, row);
+        const struct sync_track* track = sync_get_track(rocket, rocketVariables[i].name);
+        printf("%s %f\n", rocketVariables[i].name, rocketVariables[i].value);
+        rocketVariables[i].value = sync_get_val(track, row);
     }
 }
 
@@ -693,7 +691,7 @@ static int ctoy__oal_init(void)
    {
       printf("ERROR OpenAL: unable to create context\n");
       alcCloseDevice(ctoy__oal_device);
-      return 0;
+      return 0; 
    }
 
    if(!alcMakeContextCurrent(ctoy__oal_context))
