@@ -1,8 +1,8 @@
-# Install script for directory: /Users/sofia.savilampi/Downloads/CToy-master/3rdparty/tinycthread
+# Install script for directory: /Users/sofiasavilampi/Ziz/3rdparty/tinycthread
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/Users/sofia.savilampi/Downloads/CToy-master/bin")
+  set(CMAKE_INSTALL_PREFIX "/Users/sofiasavilampi/Ziz/bin")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -32,7 +32,7 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set path to fallback-tool for dependency-resolution.
+# Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
   set(CMAKE_OBJDUMP "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/objdump")
 endif()

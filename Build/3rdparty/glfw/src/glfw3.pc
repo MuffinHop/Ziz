@@ -1,7 +1,7 @@
-prefix=/Users/sofia.savilampi/Downloads/CToy-master/bin
+prefix=/Users/sofiasavilampi/Ziz/bin
 exec_prefix=${prefix}
-includedir=/Users/sofia.savilampi/Downloads/CToy-master/bin/include
-libdir=/Users/sofia.savilampi/Downloads/CToy-master/bin/lib
+includedir=/Users/sofiasavilampi/Ziz/bin/include
+libdir=/Users/sofiasavilampi/Ziz/bin/lib
 
 Name: GLFW
 Description: A multi-platform library for OpenGL, window and input

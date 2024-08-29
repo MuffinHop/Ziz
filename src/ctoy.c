@@ -672,7 +672,6 @@ static void ctoy__update(void)
    if (sync_update(rocket, (int)floor(row), &al_cb, (void *)&source))
       sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT);
 #endif
-   printf("row %f\n", row);
     for (int i = 0; i < rocketVariableCount; i++) {
          const struct sync_track* track = sync_get_track(rocket, rocketVariables[i].name);
          rocketVariables[i].value = sync_get_val(track, row);

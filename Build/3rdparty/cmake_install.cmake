@@ -1,8 +1,8 @@
-# Install script for directory: /Users/sofia.savilampi/Downloads/CToy-master/3rdparty
+# Install script for directory: /Users/sofiasavilampi/Ziz/3rdparty
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/Users/sofia.savilampi/Downloads/CToy-master/bin")
+  set(CMAKE_INSTALL_PREFIX "/Users/sofiasavilampi/Ziz/bin")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -32,15 +32,15 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set path to fallback-tool for dependency-resolution.
+# Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
   set(CMAKE_OBJDUMP "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/objdump")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/sofia.savilampi/Downloads/CToy-master/Build/3rdparty/tinycthread/cmake_install.cmake")
-  include("/Users/sofia.savilampi/Downloads/CToy-master/Build/3rdparty/glfw/cmake_install.cmake")
+  include("/Users/sofiasavilampi/Ziz/Build/3rdparty/tinycthread/cmake_install.cmake")
+  include("/Users/sofiasavilampi/Ziz/Build/3rdparty/glfw/cmake_install.cmake")
 
 endif()
 
