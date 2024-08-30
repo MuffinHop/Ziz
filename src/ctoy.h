@@ -52,7 +52,7 @@ typedef struct {
 // Array to hold Rocket variables
 RocketVariable rocketVariables[MAX_VARIABLES];
 unsigned short add_to_rocket(const char *name);
-void get_from_rocket(unsigned short id, float *ret) ;
+float get_from_rocket(unsigned short id);
 
 
 
@@ -109,6 +109,13 @@ int ctoy_get_pen_data(struct ctoy_pen_data dest[CTOY_PEN_DATA_MAX]); // return n
 /* persistent memory */
 void ctoy_register_memory(void *memory); // register global memory pointer
 void *ctoy_retrieve_memory(void); // return previously registered global memory pointer
+
+/* tic 80 likes */
+
+void pix(int x, int y, float r, float g, float b, struct m_image *image);
+void line(int x0, int y0, int x1, int y1, float r, float g, float b, struct m_image *image);
+void rect(int x, int y, int w, int h, float r, float g, float b, struct m_image *image);
+void cls(int r, int g, int b, struct m_image *image);
 
 /* keys (glfw mapping) */
 #define CTOY_KEY_SPACE              32

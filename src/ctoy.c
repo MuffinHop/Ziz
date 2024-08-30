@@ -198,10 +198,8 @@ unsigned short add_to_rocket(const char *name) {
 }
 
 // Function to retrieve the value of a variable from the dictionary
-void get_from_rocket(unsigned short id, float *ret) {
-    printf("get_from_rocket %i\n", id);
-    printf("%s ctoy.c %f\n", rocketVariables[id].name, rocketVariables[id].value);
-    *ret = rocketVariables[id].value;
+float get_from_rocket(unsigned short id) {
+    return rocketVariables[id].value;
 }
 
 void reset_rocket_device() {
@@ -652,26 +650,18 @@ static void ctoy__update(void)
    if(sample_rate == 0) {
     return;
    }
-   if(rocket_initialized==false) {
+   if(rocket_initialized == false) {
     return;
    }
    row_rate = (bpm / 60.0) * rpb;
-   printf("get_position_in_seconds %f\n", get_position_in_seconds(source));
-   printf("sample_rate %f\n", sample_rate);
-   double seconds = (double)get_position_in_seconds(source) / 4 + 0.0003233f;
-   printf("Time %f\n", seconds);
+   double seconds = (double)get_position_in_seconds(source) / 4 + 0.00032f; // magic numbers
    row = seconds * row_rate;
-   printf("Row %f\n", row);
 #ifndef SYNC_PLAYER
-   printf("Syncing up");
    if (sync_update(rocket, (int)floor(row), &al_cb, (void *)&source))
       sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT);
-   printf("Synced up");
 #endif
-   printf("rocketVariableCount %d\n", rocketVariableCount);
     for (int i = 0; i < rocketVariableCount; i++) {
         const struct sync_track* track = sync_get_track(rocket, rocketVariables[i].name);
-        printf("%s %f\n", rocketVariables[i].name, rocketVariables[i].value);
         rocketVariables[i].value = sync_get_val(track, row);
     }
 }
@@ -853,6 +843,42 @@ void ctoy_swap_buffer(struct m_image *image)
     if (image) ctoy_render_image(image);
     glfwSwapBuffers(ctoy__window);
 #endif
+}
+
+void pix(int x, int y, float r, float g, float b, struct m_image *image)
+{
+    if (x >= 0 && x < image->width && y >= 0 && y < image->height) {
+        uint32_t *pixel = (uint32_t *)(screen_buffer.data) + y * image->width + x;
+        *pixel = color_palette[color];
+    }
+}
+
+void line(int x0, int y0, int x1, int y1, float r, float g, float b, struct m_image *image) {
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1; 
+    int err = dx + dy, e2;
+
+    while (1) {
+        pix(x0, y0, color, image);
+        if (x0 == x1 && y0 == y1) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+}
+
+void rect(int x, int y, int w, int h, float r, float g, float b, struct m_image *image) {
+    for (int i = x; i < x + w; i++) {
+        for (int j = y; j < y + h; j++) {
+            pix(i, j, color, image);
+        }
+    }
+}
+
+void cls(int r, int g, int b, struct m_image *image) {
+    for (int i = 0; i < image->width * image->height; i++) {
+        ((uint32_t *)image)[i] = color_palette[color];
+    }
 }
 
 double ctoy_get_time(void)

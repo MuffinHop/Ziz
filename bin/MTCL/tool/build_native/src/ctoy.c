@@ -198,10 +198,8 @@ unsigned short add_to_rocket(const char *name) {
 }
 
 // Function to retrieve the value of a variable from the dictionary
-void get_from_rocket(unsigned short id, float *ret) {
-    printf("get_from_rocket %i\n", id);
-    printf("%s ctoy.c %f\n", rocketVariables[id].name, rocketVariables[id].value);
-    *ret = rocketVariables[id].value;
+float get_from_rocket(unsigned short id) {
+    return rocketVariables[id].value;
 }
 
 void reset_rocket_device() {
@@ -656,22 +654,14 @@ static void ctoy__update(void)
     return;
    }
    row_rate = (bpm / 60.0) * rpb;
-   printf("get_position_in_seconds %f\n", get_position_in_seconds(source));
-   printf("sample_rate %f\n", sample_rate);
-   double seconds = (double)get_position_in_seconds(source) / 4 + 0.0003233f;
-   printf("Time %f\n", seconds);
+   double seconds = (double)get_position_in_seconds(source) / 4 + 0.0003233f; // magic numbers
    row = seconds * row_rate;
-   printf("Row %f\n", row);
 #ifndef SYNC_PLAYER
-   printf("Syncing up");
    if (sync_update(rocket, (int)floor(row), &al_cb, (void *)&source))
       sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT);
-   printf("Synced up");
 #endif
-   printf("rocketVariableCount %d\n", rocketVariableCount);
     for (int i = 0; i < rocketVariableCount; i++) {
         const struct sync_track* track = sync_get_track(rocket, rocketVariables[i].name);
-        printf("%s %f\n", rocketVariables[i].name, rocketVariables[i].value);
         rocketVariables[i].value = sync_get_val(track, row);
     }
 }

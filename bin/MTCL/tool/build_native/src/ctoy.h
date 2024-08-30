@@ -52,7 +52,7 @@ typedef struct {
 // Array to hold Rocket variables
 RocketVariable rocketVariables[MAX_VARIABLES];
 unsigned short add_to_rocket(const char *name);
-void get_from_rocket(unsigned short id, float *ret) ;
+float get_from_rocket(unsigned short id) ;
 
 
 
